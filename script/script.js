@@ -33,4 +33,58 @@ window.addEventListener('DOMContentLoaded', function(){
     }
 
     countTimer('02 Septmber 2020');
+
+    //меню
+    const toggleMenu = () =>{
+        const btnMenu = document.querySelector('.menu'),
+            menu = document.querySelector('menu'),
+            closeBtn = document.querySelector('.close-btn'),
+            menuItems = menu.querySelectorAll('ul>li');
+
+        const handlerMenu = () => {
+            menu.classList.toggle('active-menu');
+        };
+
+        btnMenu.addEventListener('click', handlerMenu);
+        closeBtn.addEventListener('click', handlerMenu);
+
+        menuItems.forEach((elem) => elem.addEventListener('click', handlerMenu));
+    };
+    toggleMenu();
+
+    //popup
+    const togglePopup = () => {
+        const popup = document.querySelector('.popup'),
+            popupBtn = document.querySelectorAll('.popup-btn'),
+            popUpClose = document.querySelector('.popup-close'),
+            popupContent = document.querySelector('.popup-content');
+        
+        popupBtn.forEach((elem) => {
+            elem.addEventListener('click', () => {
+                const width = document.documentElement.clientWidth;
+                popup.style.display = 'block';
+                let flyInterval,
+                    count = 0;
+                let movePopup = function(){
+                    flyInterval = requestAnimationFrame(movePopup);
+                    count++;
+                    if(count < 38){
+                        popupContent.style.left = count + '%';
+                    }else{
+                        cancelAnimationFrame(flyInterval);
+                    }
+                };
+                if (width > 768) {
+                    flyInterval = requestAnimationFrame(movePopup);
+                }
+            });
+        });
+
+        popUpClose.addEventListener('click', () => {
+            popup.style.display = 'none';
+        });
+        
+    }
+
+    togglePopup();
 });
