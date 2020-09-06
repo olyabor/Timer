@@ -36,26 +36,24 @@ window.addEventListener('DOMContentLoaded', function(){
 
     // меню
     const toggleMenu = () => {
-        const btnMenu = document.querySelector('.menu'),
-            menu = document.querySelector('menu');
+        const menu = document.querySelector('menu'),
+            body = document.querySelector('body');
 
         const handlerMenu = () => {
             menu.classList.toggle('active-menu');
         };
 
-        menu.addEventListener('click', (event) => {
+        body.addEventListener('click', (event) => {
             let target = event.target;
 
             if (
               target.classList.contains('close-btn') ||
-              (target.offsetParent && target.offsetParent.tagName === 'MENU')
+              target.offsetParent && target.offsetParent.tagName === 'MENU' ||
+              target.closest('.menu') ||
+              !target.classList.contains('menu')
             ) {
               handlerMenu();
             }
-        });
-
-        btnMenu.addEventListener('click', (event) => {
-            handlerMenu();
         });
     };
     toggleMenu();
