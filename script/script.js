@@ -48,9 +48,9 @@ window.addEventListener('DOMContentLoaded', function(){
 
             if (
               target.classList.contains('close-btn') ||
-              target.offsetParent && target.offsetParent.tagName === 'MENU' ||
+              (target.offsetParent && target.offsetParent.tagName === 'MENU') ||
               target.closest('.menu') ||
-              !target.classList.contains('menu')
+              !target.classList.contains('menu') && menu.classList.contains('active-menu')
             ) {
               handlerMenu();
             }
