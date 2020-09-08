@@ -309,9 +309,9 @@ window.addEventListener('DOMContentLoaded', function(){
             if (start === total) {
               clearInterval(interval);
             } else if (start < total) {
-              totalValue.textContent = ++start;
+              totalValue.textContent = ++start + Math.floor((total - start) / 2);
             } else {
-              totalValue.textContent = --start;
+              totalValue.textContent = --start + Math.floor((total - start) / 2);
             } 
           }, 10);
         }
