@@ -356,7 +356,6 @@ window.addEventListener('DOMContentLoaded', function(){
         input = form.querySelectorAll('input'),
         patternPhone = /^\+?\d+$/;
       event.preventDefault();
-      // input.filter(item => item.type === 'text');
       const valid = () => {
         let flag = true;
         input.forEach((elem) => {
