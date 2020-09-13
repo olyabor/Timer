@@ -33,8 +33,7 @@ window.addEventListener('DOMContentLoaded', function(){
   }
 
   countTimer('02 Septmber 2020');
-  //кнопка для перемещения на следующий слайд
-  const btnClick = document.querySelector(`main a`);
+
   //плавная прокрутка
   const handlerClick = (e) => {
     const blockId = e.target.getAttribute('href').substr(1);
@@ -45,7 +44,6 @@ window.addEventListener('DOMContentLoaded', function(){
     });
   };
 
-  btnClick.addEventListener('click', (e) => handlerClick(e));
   // меню
   const toggleMenu = () => {
     const menu = document.querySelector('menu'),
@@ -57,13 +55,14 @@ window.addEventListener('DOMContentLoaded', function(){
 
     body.addEventListener('click', (event) => {
       let target = event.target;
-        if (target.closest('ul>li') && target.matches('a')) {
+        if (target.closest('ul>li') && target.matches('menu a')) {
             handlerClick(event);
         }
           if (
             target.closest('.menu') ||
             (!target.classList.contains('menu') &&
               !target.classList.contains('active-menu') &&
+              !target.matches('.active-menu li') &&
               menu.classList.contains('active-menu'))
           ) {
             handlerMenu();
