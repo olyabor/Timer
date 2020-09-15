@@ -324,8 +324,7 @@ window.addEventListener('DOMContentLoaded', function(){
   const sendForm = () => {
     const errorMessage = 'Что-то пошло не так...',
       loadMessage = 'Загрузка...',
-      successMessage = 'Спасибо! Мы с вами свяжемся!',
-      patternPhone = /^\+?\d+$/;
+      successMessage = 'Спасибо! Мы с вами свяжемся!';
 
     const form = document.getElementById('form1'),
       form2 = document.getElementById('form2'),
@@ -344,54 +343,53 @@ window.addEventListener('DOMContentLoaded', function(){
             return;
           }
           if (request.status === 200) {
-            resolve(statusMessage.textContent = successMessage);
+            resolve(successMessage);
+            statusMessage.textContent = successMessage;
           } else {
-            reject(statusMessage.textContent = errorMessage);
+            reject(errorMessage);
+            statusMessage.textContent = errorMessage;
           }
         });
         request.send(JSON.stringify(body));
       });
     };
 
-    const valid = (input) => {
-      let flag = true;
-      input.forEach((elem) => {
-        if (elem.type === 'tel' && !patternPhone.test(elem.value)) {
-          elem.style.border = 'solid red';
-          flag = false;
-        }
-      });
-      return flag;
-    };
-
     const sendData = (event) => {
       const form = event.target,
-        input = form.querySelectorAll('input');
+        input = form.querySelectorAll('input'),
+        patternPhone = /^\+?\d+$/;
       event.preventDefault();
-      statusMessage.textContent = '';
-      if (valid(input)) {
+      const valid = () => {
+        let flag = true;
+        input.forEach((elem) => {
+          if (elem.type === 'tel' && !patternPhone.test(elem.value)) {
+            elem.style.border = 'solid red';
+            flag = false;
+            event.preventDefault();
+          }
+        });
+        return flag;
+      };
+
+      if (valid()) {
         form.append(statusMessage);
         if (form === form3) {
           statusMessage.style.cssText = 'font-size: 2rem; color: white;';
         }
+        statusMessage.textContent = loadMessage;
         const formData = new FormData(form);
         let body = {};
         formData.forEach((val, key) => {
           body[key] = val;
         });
-        Promise.all([form])
-          .then((body) => {postData(body);})
-          .then((statusMessage.textContent = loadMessage))
-          .then(form.addEventListener('click', () => {statusMessage.textContent = '';}))
-          .then(setTimeout(() => {statusMessage.textContent = '';}, 10000))
-          .catch((error) => {
-            console.error(error);
-          });
         input.forEach((item) => {
           item.value = '';
           item.style.border = '';
         });
       }
+      Promise.all([form])
+        .then(sendData)
+        .catch((error) => console.error(error));
     };
 
     form.addEventListener('submit', sendData);
