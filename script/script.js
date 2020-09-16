@@ -32,7 +32,7 @@ window.addEventListener('DOMContentLoaded', function(){
     updateClock();
   }
 
-  countTimer('18 Septmber 2020');
+  countTimer('02 Septmber 2020');
 
   //плавная прокрутка
   const handlerClick = (e) => {
@@ -414,11 +414,9 @@ window.addEventListener('DOMContentLoaded', function(){
     form2.addEventListener('submit', sendData);
     form3.addEventListener('submit', sendData);
   };
-
-  document.querySelectorAll('input[type=text], .mess').forEach((item) => {
-    item.addEventListener('input', () => {
-      item.value = item.value.replace(/[^а-я\s]/gi, '');
-    });
+  const message = document.querySelector('.mess');
+  message.addEventListener('input', () => {
+    message.value = message.value.replace(/[^а-я\s]/gi, '');
   });
 
   sendForm();
