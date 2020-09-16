@@ -32,30 +32,41 @@ window.addEventListener('DOMContentLoaded', function(){
     updateClock();
   }
 
-  countTimer('02 Septmber 2020');
+  countTimer('18 Septmber 2020');
+
+  //плавная прокрутка
+  const handlerClick = (e) => {
+    const blockId = e.target.getAttribute('href').substr(1);
+    e.preventDefault();
+    document.getElementById(blockId).scrollIntoView({
+      behavior: 'smooth',
+      block: 'start',
+    });
+  };
 
   // меню
   const toggleMenu = () => {
-    const btnMenu = document.querySelector('.menu'),
-      menu = document.querySelector('menu');
+    const menu = document.querySelector('menu'),
+      body = document.querySelector('body');
 
     const handlerMenu = () => {
       menu.classList.toggle('active-menu');
     };
 
-    menu.addEventListener('click', (event) => {
+    body.addEventListener('click', (event) => {
       let target = event.target;
-
+      if (target.closest('ul>li') && target.matches('menu a')) {
+        handlerClick(event);
+      }
       if (
-        target.classList.contains('close-btn') ||
-        (target.offsetParent && target.offsetParent.tagName === 'MENU')
+        target.closest('.menu') ||
+        (!target.classList.contains('menu') &&
+          !target.classList.contains('active-menu') &&
+          !target.matches('.active-menu li') &&
+          menu.classList.contains('active-menu'))
       ) {
         handlerMenu();
       }
-    });
-
-    btnMenu.addEventListener('click', (event) => {
-      handlerMenu();
     });
   };
   toggleMenu();
@@ -139,7 +150,7 @@ window.addEventListener('DOMContentLoaded', function(){
 
   tabs();
 
-  // табы
+  // слайдер
 
   const slider = () => {
     const slide = document.querySelectorAll('.portfolio-item'),
@@ -250,17 +261,16 @@ window.addEventListener('DOMContentLoaded', function(){
   const command = document.getElementById('command');
 
   const toggleImage = (target) => {
-      if (target.closest('.command__photo')) {
-        // console.log(target.closest('.command__photo').dataset);
-        const imageSrc = target.closest('.command__photo').src;
-        target.closest('.command__photo').src = target.closest(
-          '.command__photo'
-        ).dataset.img;
-        target.closest('.command__photo').dataset.img = imageSrc;
-      }
+    if (target.closest('.command__photo')) {
+      const imageSrc = target.closest('.command__photo').src;
+      target.closest('.command__photo').src = target.closest(
+        '.command__photo'
+      ).dataset.img;
+      target.closest('.command__photo').dataset.img = imageSrc;
+    }
   };
 
-  command.addEventListener('mouseover', (e)=>{
+  command.addEventListener('mouseover', (e) => {
     const target = e.target;
     toggleImage(target);
   });
@@ -273,7 +283,6 @@ window.addEventListener('DOMContentLoaded', function(){
   // калькулятор
   const calcInput = document.getElementById('calc').querySelectorAll('input');
   const calc = (price = 100) => {
-
     const calcBlock = document.querySelector('.calc-block'),
       calcType = document.querySelector('.calc-type'),
       calcSquare = document.querySelector('.calc-square'),
@@ -281,44 +290,136 @@ window.addEventListener('DOMContentLoaded', function(){
       calcDay = document.querySelector('.calc-day'),
       totalValue = document.getElementById('total');
 
-      const countSum = () => {
-        let total = 0,
-          countValue = 1,
-          dayValue = 1;
-        const typeValue = calcType.options[calcType.selectedIndex].value,
-          squareValue = +calcSquare.value;
+    const countSum = () => {
+      let total = 0,
+        countValue = 1,
+        dayValue = 1;
+      const typeValue = calcType.options[calcType.selectedIndex].value,
+        squareValue = +calcSquare.value;
 
-        if (calcCount.value > 1) {
-          countValue += (calcCount.value - 1) / 10;
-        }
+      if (calcCount.value > 1) {
+        countValue += (calcCount.value - 1) / 10;
+      }
 
-        if (calcDay.value && calcDay.value < 5){
-          dayValue *= 2;
-        } else if (calcDay.value && calcDay.value < 10) {
-          dayValue *= 1.5;
-        }
-        
-        if (typeValue && squareValue) {
-          total = price * typeValue * squareValue * countValue * dayValue;
-        }
+      if (calcDay.value && calcDay.value < 5) {
+        dayValue *= 2;
+      } else if (calcDay.value && calcDay.value < 10) {
+        dayValue *= 1.5;
+      }
 
-        totalValue.textContent = Math.round(total);
-      };
+      if (typeValue && squareValue) {
+        total = price * typeValue * squareValue * countValue * dayValue;
+      }
 
-      calcBlock.addEventListener('change', (event) => {
-        const target = event.target;
+      totalValue.textContent = Math.round(total);
+    };
 
-        if (target.matches('select') || target.matches('input')) {
-          countSum();
-        }
-      });
+    calcBlock.addEventListener('change', (event) => {
+      const target = event.target;
+
+      if (target.matches('select') || target.matches('input')) {
+        countSum();
+      }
+    });
   };
 
   calc(100);
 
   calcInput.forEach((item) => {
-      item.addEventListener('input', () => {
-          item.value = item.value.replace(/\D/g, '');
-      });
+    item.addEventListener('input', () => {
+      item.value = item.value.replace(/\D/g, '');
+    });
   });
+
+  //send-ajax-form
+  const sendForm = () => {
+    const errorMessage = 'Что-то пошло не так...',
+      loadMessage = 'Загрузка...',
+      successMessage = 'Спасибо! Мы с вами свяжемся!',
+      patternPhone = /^\+?\d+$/;
+
+    const form = document.getElementById('form1'),
+      form2 = document.getElementById('form2'),
+      form3 = document.getElementById('form3');
+
+    const statusMessage = document.createElement('div');
+    statusMessage.style.cssText = 'font-size: 2rem;';
+
+    const postData = (body) => {
+      return fetch('./server.php', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(body),
+        credentials: 'include',
+      });
+    };
+
+    const valid = (input) => {
+      let flag = true;
+      input.forEach((elem) => {
+        if (elem.type === 'tel' && !patternPhone.test(elem.value)) {
+          elem.style.border = 'solid red';
+          flag = false;
+        }
+      });
+      return flag;
+    };
+
+    const sendData = (event) => {
+      const form = event.target,
+        input = form.querySelectorAll('input');
+      event.preventDefault();
+      if (valid(input)) {
+        form.append(statusMessage);
+        if (form === form3) {
+          statusMessage.style.cssText = 'font-size: 2rem; color: white;';
+        }
+        const formData = new FormData(form);
+        let body = {};
+        formData.forEach((val, key) => {
+          body[key] = val;
+        });
+        postData(body)
+          .then((statusMessage.textContent = loadMessage))
+          .then((response) => {
+            if (response.status !== 200) {
+              throw new Error('status network is not 200');
+            }
+            statusMessage.textContent = successMessage;
+          })
+          .then(
+            form.addEventListener('click', () => {
+              statusMessage.textContent = '';
+            })
+          )
+          .then(
+            setTimeout(() => {
+              statusMessage.textContent = '';
+            }, 10000)
+          )
+          .catch((error) => {
+            statusMessage.textContent = errorMessage;
+            console.error(error);
+          });
+        input.forEach((item) => {
+          item.value = '';
+          item.style.border = '';
+        });
+      }
+    };
+
+    form.addEventListener('submit', sendData);
+    form2.addEventListener('submit', sendData);
+    form3.addEventListener('submit', sendData);
+  };
+
+  document.querySelectorAll('input[type=text], .mess').forEach((item) => {
+    item.addEventListener('input', () => {
+      item.value = item.value.replace(/[^а-я\s]/gi, '');
+    });
+  });
+
+  sendForm();
 });
