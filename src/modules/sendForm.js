@@ -56,14 +56,14 @@ const sendForm = () => {
           statusMessage.textContent = successMessage;
         })
         .then(
+          setTimeout(() => {
+            statusMessage.textContent = '';
+          }, 5000)
+        )
+        .then(
           form.addEventListener('click', () => {
             statusMessage.textContent = '';
           })
-        )
-        .then(
-          setTimeout(() => {
-            statusMessage.textContent = '';
-          }, 10000)
         )
         .catch((error) => {
           statusMessage.textContent = errorMessage;
@@ -82,7 +82,7 @@ const sendForm = () => {
 };
 const message = document.querySelector('.mess');
 message.addEventListener('input', () => {
-  message.value = message.value.replace(/[^а-я\s]/gi, '');
+  message.value = message.value.replace(/[^а-я\s\,\.\!\?\:\;\"^\d]/gi, '');
 });
 
 export default sendForm;
